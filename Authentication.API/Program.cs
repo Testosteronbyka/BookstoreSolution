@@ -22,8 +22,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", policy =>
     {
         policy.AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader();
+              .AllowAnyMethod()
+              .AllowAnyHeader();
     });
 });
 
@@ -44,33 +44,42 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapIdentityApi<IdentityUser>();
 
+// Seeding użytkownika admin
 using (var scope = app.Services.CreateScope())
 {
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-
-    // Dodaj rolę Admin 
-    if (!await roleManager.RoleExistsAsync("Admin"))
+    try
     {
-        await roleManager.CreateAsync(new IdentityRole("Admin"));
-    }
+        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
-    //  admin
-    var adminUser = await userManager.FindByNameAsync("admin");
-    if (adminUser == null)
-    {
-        adminUser = new IdentityUser 
-        { 
-            UserName = "admin",
-            Email = "admin@example.com",
-            EmailConfirmed = true
-        };
-        
-        var result = await userManager.CreateAsync(adminUser, "admin123");
-        if (result.Succeeded)
+        // Dodaj rolę Admin jeśli nie istnieje
+        if (!await roleManager.RoleExistsAsync("Admin"))
         {
-            await userManager.AddToRoleAsync(adminUser, "Admin");
+            await roleManager.CreateAsync(new IdentityRole("Admin"));
         }
+
+        // Dodaj użytkownika admin
+        var adminUser = await userManager.FindByEmailAsync("admin@example.com");
+        if (adminUser == null)
+        {
+            adminUser = new IdentityUser 
+            { 
+                UserName = "admin@example.com",
+                Email = "admin@example.com",
+                EmailConfirmed = true
+            };
+            
+            var result = await userManager.CreateAsync(adminUser, "admin123");
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(adminUser, "Admin");
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        // Log błędu - w środowisku produkcyjnym użyj odpowiedniego loggera
+        Console.WriteLine($"Błąd podczas seedowania: {ex.Message}");
     }
 }
 

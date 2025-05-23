@@ -66,7 +66,7 @@ namespace BookStore.API.Migrations
                         {
                             Id = 1,
                             Author = "Andrzej Sapkowski",
-                            CreatedDate = new DateTime(2025, 5, 23, 10, 59, 58, 181, DateTimeKind.Local).AddTicks(7242),
+                            CreatedDate = new DateTime(2025, 5, 23, 11, 4, 35, 757, DateTimeKind.Local).AddTicks(7624),
                             Description = "Pierwszy tom kultowej sagi o wiedźminie",
                             ISBN = "9788375780635",
                             Price = 39.99m,
@@ -77,7 +77,7 @@ namespace BookStore.API.Migrations
                         {
                             Id = 2,
                             Author = "J.R.R. Tolkien",
-                            CreatedDate = new DateTime(2025, 5, 23, 10, 59, 58, 181, DateTimeKind.Local).AddTicks(7247),
+                            CreatedDate = new DateTime(2025, 5, 23, 11, 4, 35, 757, DateTimeKind.Local).AddTicks(7631),
                             Description = "Klasyczna powieść fantasy",
                             ISBN = "9788324159819",
                             Price = 49.99m,
@@ -88,7 +88,7 @@ namespace BookStore.API.Migrations
                         {
                             Id = 3,
                             Author = "George Orwell",
-                            CreatedDate = new DateTime(2025, 5, 23, 10, 59, 58, 181, DateTimeKind.Local).AddTicks(7252),
+                            CreatedDate = new DateTime(2025, 5, 23, 11, 4, 35, 757, DateTimeKind.Local).AddTicks(7637),
                             Description = "Rok 1984 w wersji orwellowskiej",
                             ISBN = "9788382022287",
                             Price = 29.99m,

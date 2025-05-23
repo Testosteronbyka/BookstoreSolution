@@ -2,15 +2,36 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
+// Konfiguracja HttpClient z obejściem SSL dla development
 builder.Services.AddHttpClient("BookAPI", client =>
-{
-    client.BaseAddress = new Uri("https://localhost:7001/");
-});
+    {
+        client.BaseAddress = new Uri("https://localhost:7001/");
+    })
+    .ConfigurePrimaryHttpMessageHandler(() =>
+    {
+        var handler = new HttpClientHandler();
+        if (builder.Environment.IsDevelopment())
+        {
+            handler.ServerCertificateCustomValidationCallback = 
+                HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+        }
+        return handler;
+    });
 
 builder.Services.AddHttpClient("AuthAPI", client =>
-{
-    client.BaseAddress = new Uri("https://localhost:7002/");
-});
+    {
+        client.BaseAddress = new Uri("https://localhost:7002/");
+    })
+    .ConfigurePrimaryHttpMessageHandler(() =>
+    {
+        var handler = new HttpClientHandler();
+        if (builder.Environment.IsDevelopment())
+        {
+            handler.ServerCertificateCustomValidationCallback = 
+                HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+        }
+        return handler;
+    });
 
 builder.Services.AddSession(options =>
 {

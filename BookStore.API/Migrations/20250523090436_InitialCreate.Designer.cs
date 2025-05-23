@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookStore.API.Migrations
 {
     [DbContext(typeof(BookDbContext))]
-    [Migration("20250523083300_InitialCreate")]
+    [Migration("20250523090436_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -63,6 +63,41 @@ namespace BookStore.API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Books");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Author = "Andrzej Sapkowski",
+                            CreatedDate = new DateTime(2025, 5, 23, 11, 4, 35, 757, DateTimeKind.Local).AddTicks(7624),
+                            Description = "Pierwszy tom kultowej sagi o wiedźminie",
+                            ISBN = "9788375780635",
+                            Price = 39.99m,
+                            Stock = 10,
+                            Title = "Wiedźmin: Ostatnie życzenie"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Author = "J.R.R. Tolkien",
+                            CreatedDate = new DateTime(2025, 5, 23, 11, 4, 35, 757, DateTimeKind.Local).AddTicks(7631),
+                            Description = "Klasyczna powieść fantasy",
+                            ISBN = "9788324159819",
+                            Price = 49.99m,
+                            Stock = 5,
+                            Title = "Hobbit, czyli tam i z powrotem"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Author = "George Orwell",
+                            CreatedDate = new DateTime(2025, 5, 23, 11, 4, 35, 757, DateTimeKind.Local).AddTicks(7637),
+                            Description = "Rok 1984 w wersji orwellowskiej",
+                            ISBN = "9788382022287",
+                            Price = 29.99m,
+                            Stock = 8,
+                            Title = "1984"
+                        });
                 });
 #pragma warning restore 612, 618
         }

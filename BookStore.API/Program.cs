@@ -21,6 +21,9 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Dodaj logging
+builder.Services.AddLogging();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -34,5 +37,32 @@ app.UseCors("AllowAll");
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Test połączenia z bazą danych przy starcie
+using (var scope = app.Services.CreateScope())
+{
+    try
+    {
+        var context = scope.ServiceProvider.GetRequiredService<BookDbContext>();
+        var canConnect = await context.Database.CanConnectAsync();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        
+        if (canConnect)
+        {
+            logger.LogInformation(" Połączenie z bazą danych MySQL udane");
+            var bookCount = await context.Books.CountAsync();
+            logger.LogInformation($" Liczba książek w bazie: {bookCount}");
+        }
+        else
+        {
+            logger.LogError(" Nie można połączyć się z bazą danych MySQL");
+        }
+    }
+    catch (Exception ex)
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, " Błąd podczas testowania połączenia z bazą danych");
+    }
+}
 
 app.Run();
