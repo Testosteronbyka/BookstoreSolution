@@ -2,7 +2,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
-// Użyj HTTP zamiast HTTPS żeby uniknąć problemów SSL
+// HTTP clients bez SSL
 builder.Services.AddHttpClient("BookAPI", client =>
 {
     client.BaseAddress = new Uri("http://localhost:5001/");
@@ -32,9 +32,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-// USUŃ app.UseHttpsRedirection(); żeby uniknąć problemów SSL
 app.UseStaticFiles();
-
 app.UseRouting();
 app.UseSession();
 app.UseAuthorization();

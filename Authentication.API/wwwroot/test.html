@@ -1,0 +1,134 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Authentication API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .endpoint { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .endpoint h3 { margin-top: 0; color: #333; }
+        .btn { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        .btn:hover { background: #0056b3; }
+        .result { margin-top: 10px; padding: 10px; background: #f8f9fa; border-left: 4px solid #007bff; white-space: pre-wrap; }
+        .error { border-left-color: #dc3545; background: #f8d7da; }
+        .success { border-left-color: #28a745; background: #d4edda; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🔐 Authentication API Test Panel</h1>
+
+    <div class="endpoint">
+        <h3>📊 Test Connection & Users</h3>
+        <button class="btn" onclick="testConnection()">Test API</button>
+        <button class="btn" onclick="getAllUsers()">Get All Users</button>
+        <button class="btn" onclick="createTestUser()">Create Test User</button>
+        <div id="testResult" class="result" style="display:none;"></div>
+    </div>
+
+    <div class="endpoint">
+        <h3>👤 User Registration</h3>
+        <input type="email" id="regEmail" placeholder="Email" style="margin-right: 10px;">
+        <input type="password" id="regPassword" placeholder="Password">
+        <button class="btn" onclick="registerUser()">Register</button>
+        <div id="regResult" class="result" style="display:none;"></div>
+    </div>
+
+    <div class="endpoint">
+        <h3>🔑 User Login</h3>
+        <input type="email" id="loginEmail" placeholder="Email" style="margin-right: 10px;">
+        <input type="password" id="loginPassword" placeholder="Password">
+        <button class="btn" onclick="loginUser()">Login</button>
+        <div id="loginResult" class="result" style="display:none;"></div>
+    </div>
+</div>
+
+<script>
+    async function testConnection() {
+        showResult('testResult', 'Testowanie połączenia...', 'result');
+        try {
+            const response = await fetch('/api/auth/test');
+            const data = await response.json();
+            showResult('testResult', JSON.stringify(data, null, 2), response.ok ? 'success' : 'error');
+        } catch (error) {
+            showResult('testResult', 'Błąd: ' + error.message, 'error');
+        }
+    }
+
+    async function getAllUsers() {
+        showResult('testResult', 'Pobieranie użytkowników...', 'result');
+        try {
+            const response = await fetch('/api/auth/users');
+            const data = await response.json();
+            showResult('testResult', JSON.stringify(data, null, 2), response.ok ? 'success' : 'error');
+        } catch (error) {
+            showResult('testResult', 'Błąd: ' + error.message, 'error');
+        }
+    }
+
+    async function createTestUser() {
+        showResult('testResult', 'Tworzenie użytkownika testowego...', 'result');
+        try {
+            const response = await fetch('/api/auth/create-test-user', { method: 'POST' });
+            const data = await response.json();
+            showResult('testResult', JSON.stringify(data, null, 2), response.ok ? 'success' : 'error');
+        } catch (error) {
+            showResult('testResult', 'Błąd: ' + error.message, 'error');
+        }
+    }
+
+    async function registerUser() {
+        const email = document.getElementById('regEmail').value;
+        const password = document.getElementById('regPassword').value;
+
+        if (!email || !password) {
+            showResult('regResult', 'Podaj email i hasło', 'error');
+            return;
+        }
+
+        showResult('regResult', 'Rejestrowanie...', 'result');
+        try {
+            const response = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await response.json();
+            showResult('regResult', JSON.stringify(data, null, 2), response.ok ? 'success' : 'error');
+        } catch (error) {
+            showResult('regResult', 'Błąd: ' + error.message, 'error');
+        }
+    }
+
+    async function loginUser() {
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+
+        if (!email || !password) {
+            showResult('loginResult', 'Podaj email i hasło', 'error');
+            return;
+        }
+
+        showResult('loginResult', 'Logowanie...', 'result');
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await response.json();
+            showResult('loginResult', JSON.stringify(data, null, 2), response.ok ? 'success' : 'error');
+        } catch (error) {
+            showResult('loginResult', 'Błąd: ' + error.message, 'error');
+        }
+    }
+
+    function showResult(elementId, message, type) {
+        const element = document.getElementById(elementId);
+        element.style.display = 'block';
+        element.textContent = message;
+        element.className = 'result ' + type;
+    }
+</script>
+</body>
+</html>
