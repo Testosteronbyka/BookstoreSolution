@@ -1,8 +1,59 @@
-﻿@model TModel
-
+﻿@model List<Bookstore.Web.Models.Book>
 @{
-    ViewBag.Title = "title";
-    Layout = "_Layout";
+    ViewData["Title"] = "Księgarnia";
 }
 
-<h2>title</h2>
+<h1>Księgarnia</h1>
+<p>Przeglądaj nasze książki i dodawaj je do koszyka</p>
+
+@if (Model != null && Model.Any())
+{
+    <div class="row">
+        @foreach (var book in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@book.Title</h5>
+                        <p class="card-text">
+                            <strong>Autor:</strong> @book.Author<br>
+                            <strong>ISBN:</strong> @book.ISBN<br>
+                            <strong>Dostępność:</strong> @book.Stock szt.
+                        </p>
+                        @if (!string.IsNullOrEmpty(book.Description))
+                        {
+                            <p class="card-text">@book.Description</p>
+                        }
+                        <p class="card-text"><strong>Cena: @book.Price.ToString("C")</strong></p>
+                        
+                        @if (Context.Session.GetString("IsLoggedIn") == "true")
+                        {
+                            @if (book.Stock > 0)
+                            {
+                                <form asp-controller="Cart" asp-action="AddToCart" method="post" class="d-inline">
+                                    <input type="hidden" name="bookId" value="@book.Id" />
+                                    <button type="submit" class="btn btn-primary">Dodaj do koszyka</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <button class="btn btn-secondary" disabled>Brak w magazynie</button>
+                            }
+                        }
+                        else
+                        {
+                            <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary">Zaloguj się, aby kupić</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        <h4>Brak książek</h4>
+        <p>W tej chwili nie ma dostępnych książek w księgarni.</p>
+    </div>
+}

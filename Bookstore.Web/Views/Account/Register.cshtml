@@ -1,8 +1,27 @@
-﻿@model TModel
-
-@{
-    ViewBag.Title = "title";
-    Layout = "_Layout";
+﻿@{
+    ViewData["Title"] = "Rejestracja";
 }
 
-<h2>title</h2>
+<h2>Rejestracja</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-controller="Account" asp-action="Register" method="post">
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Hasło</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+                <div class="form-text">Hasło musi mieć co najmniej 6 znaków.</div>
+            </div>
+            <div class="mb-3">
+                <label for="confirmPassword" class="form-label">Potwierdź hasło</label>
+                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+            </div>
+            <button type="submit" class="btn btn-success">Zarejestruj</button>
+            <a asp-controller="Account" asp-action="Login" class="btn btn-link">Masz już konto? Zaloguj się</a>
+        </form>
+    </div>
+</div>

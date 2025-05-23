@@ -1,31 +1,57 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Bookstore.Web.Models;
 
-namespace Bookstore.Web.Controllers;
-
-public class HomeController : Controller
+namespace Bookstore.Web.Controllers
 {
-    private readonly ILogger<HomeController> _logger;
-
-    public HomeController(ILogger<HomeController> logger)
+    public class HomeController : Controller
     {
-        _logger = logger;
-    }
+        private readonly IHttpClientFactory _clientFactory;
 
-    public IActionResult Index()
-    {
-        return View();
-    }
+        public HomeController(IHttpClientFactory clientFactory)
+        {
+            _clientFactory = clientFactory;
+        }
 
-    public IActionResult Privacy()
-    {
-        return View();
-    }
+        public async Task<IActionResult> Index()
+        {
+            try
+            {
+                var client = _clientFactory.CreateClient("BookAPI");
+                var response = await client.GetAsync("api/books");
+                
+                if (response.IsSuccessStatusCode)
+                {
+                    var books = await response.Content.ReadFromJsonAsync<List<Book>>();
+                    return View(books ?? new List<Book>());
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = $"Błąd połączenia z API: {ex.Message}";
+            }
+            
+            return View(new List<Book>());
+        }
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        public async Task<IActionResult> Bookstore()
+        {
+            try
+            {
+                var client = _clientFactory.CreateClient("BookAPI");
+                var response = await client.GetAsync("api/books");
+                
+                if (response.IsSuccessStatusCode)
+                {
+                    var books = await response.Content.ReadFromJsonAsync<List<Book>>();
+                    return View(books ?? new List<Book>());
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = $"Błąd połączenia z API: {ex.Message}";
+            }
+            
+            return View(new List<Book>());
+        }
     }
 }

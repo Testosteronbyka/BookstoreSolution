@@ -1,8 +1,22 @@
-﻿@model TModel
-
-@{
-    ViewBag.Title = "title";
-    Layout = "_Layout";
+﻿@{
+    ViewData["Title"] = "Logowanie";
 }
 
-<h2>title</h2>
+<h2>Logowanie</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-controller="Account" asp-action="Login" method="post">
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Hasło</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Zaloguj</button>
+            <a asp-controller="Account" asp-action="Register" class="btn btn-link">Nie masz konta? Zarejestruj się</a>
+        </form>
+    </div>
+</div>

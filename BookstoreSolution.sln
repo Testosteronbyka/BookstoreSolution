@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bookstore.Web", "Bookstore.Web\Bookstore.Web.csproj", "{F0B5A0EF-F5D6-4CE3-97AD-58C7A686A8FA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authentication.API", "Authentication.API\Authentication.API.csproj", "{A5DF0313-517B-4C6B-B039-3D7BD332A988}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookStore.API", "BookStore.API\BookStore.API.csproj", "{AEF3EEE0-1144-4BCB-ABC0-E1A037C17C9D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +16,13 @@ Global
 		{F0B5A0EF-F5D6-4CE3-97AD-58C7A686A8FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F0B5A0EF-F5D6-4CE3-97AD-58C7A686A8FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F0B5A0EF-F5D6-4CE3-97AD-58C7A686A8FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5DF0313-517B-4C6B-B039-3D7BD332A988}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5DF0313-517B-4C6B-B039-3D7BD332A988}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5DF0313-517B-4C6B-B039-3D7BD332A988}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5DF0313-517B-4C6B-B039-3D7BD332A988}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEF3EEE0-1144-4BCB-ABC0-E1A037C17C9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEF3EEE0-1144-4BCB-ABC0-E1A037C17C9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEF3EEE0-1144-4BCB-ABC0-E1A037C17C9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEF3EEE0-1144-4BCB-ABC0-E1A037C17C9D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
