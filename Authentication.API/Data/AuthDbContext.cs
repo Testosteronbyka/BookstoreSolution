@@ -15,7 +15,9 @@ namespace Authentication.API.Data
         {
             base.OnModelCreating(builder);
             
-            // Podstawowa konfiguracja dla MySQL
+            // Podstawowa konfiguracja dla MySQL - używamy domyślnych nazw tabel AspNet*
+            // NIE DODAWAJ MAPOWANIA dla FirstName, LastName - nie istnieją w tabeli!
+            
             builder.Entity<ApplicationUser>(entity =>
             {
                 entity.Property(m => m.Id).HasMaxLength(450);
@@ -23,6 +25,7 @@ namespace Authentication.API.Data
                 entity.Property(m => m.NormalizedEmail).HasMaxLength(256);
                 entity.Property(m => m.UserName).HasMaxLength(256);
                 entity.Property(m => m.NormalizedUserName).HasMaxLength(256);
+                // USUŃ wszystkie mapowania FirstName, LastName
             });
 
             builder.Entity<IdentityRole>(entity =>
