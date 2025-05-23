@@ -2,36 +2,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
-// Konfiguracja HttpClient z obejściem SSL dla development
+// Użyj HTTP zamiast HTTPS żeby uniknąć problemów SSL
 builder.Services.AddHttpClient("BookAPI", client =>
-    {
-        client.BaseAddress = new Uri("https://localhost:7001/");
-    })
-    .ConfigurePrimaryHttpMessageHandler(() =>
-    {
-        var handler = new HttpClientHandler();
-        if (builder.Environment.IsDevelopment())
-        {
-            handler.ServerCertificateCustomValidationCallback = 
-                HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-        }
-        return handler;
-    });
+{
+    client.BaseAddress = new Uri("http://localhost:5001/");
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
 
 builder.Services.AddHttpClient("AuthAPI", client =>
-    {
-        client.BaseAddress = new Uri("https://localhost:7002/");
-    })
-    .ConfigurePrimaryHttpMessageHandler(() =>
-    {
-        var handler = new HttpClientHandler();
-        if (builder.Environment.IsDevelopment())
-        {
-            handler.ServerCertificateCustomValidationCallback = 
-                HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-        }
-        return handler;
-    });
+{
+    client.BaseAddress = new Uri("http://localhost:5002/");
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
 
 builder.Services.AddSession(options =>
 {
@@ -39,6 +21,8 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
     options.IdleTimeout = TimeSpan.FromHours(1);
 });
+
+builder.Services.AddLogging();
 
 var app = builder.Build();
 
@@ -48,7 +32,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+// USUŃ app.UseHttpsRedirection(); żeby uniknąć problemów SSL
 app.UseStaticFiles();
 
 app.UseRouting();

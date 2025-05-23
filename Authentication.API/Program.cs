@@ -12,8 +12,9 @@ builder.Services.AddDbContext<AuthDbContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("Default"),
         new MySqlServerVersion(new Version(8, 0, 29))));
 
-builder.Services.AddIdentityApiEndpoints<IdentityUser>()
-    .AddEntityFrameworkStores<AuthDbContext>();
+// Proste cookie authentication
+builder.Services.AddAuthentication("Cookies")
+    .AddCookie("Cookies");
 
 builder.Services.AddAuthorization();
 
@@ -22,65 +23,48 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", policy =>
     {
         policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
+            .AllowAnyMethod()
+            .AllowAnyHeader();
     });
 });
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
-app.UseHttpsRedirection();
+// USUŃ app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapIdentityApi<IdentityUser>();
 
-// Seeding użytkownika admin
+// Test połączenia
 using (var scope = app.Services.CreateScope())
 {
     try
     {
-        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-
-        // Dodaj rolę Admin jeśli nie istnieje
-        if (!await roleManager.RoleExistsAsync("Admin"))
+        var context = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        
+        var canConnect = await context.Database.CanConnectAsync();
+        if (canConnect)
         {
-            await roleManager.CreateAsync(new IdentityRole("Admin"));
+            logger.LogInformation(" Authentication.API - Połączenie z MySQL OK");
         }
-
-        // Dodaj użytkownika admin
-        var adminUser = await userManager.FindByEmailAsync("admin@example.com");
-        if (adminUser == null)
+        else
         {
-            adminUser = new IdentityUser 
-            { 
-                UserName = "admin@example.com",
-                Email = "admin@example.com",
-                EmailConfirmed = true
-            };
-            
-            var result = await userManager.CreateAsync(adminUser, "admin123");
-            if (result.Succeeded)
-            {
-                await userManager.AddToRoleAsync(adminUser, "Admin");
-            }
+            logger.LogError(" Authentication.API - Błąd połączenia z MySQL");
         }
     }
     catch (Exception ex)
     {
-        // Log błędu - w środowisku produkcyjnym użyj odpowiedniego loggera
-        Console.WriteLine($"Błąd podczas seedowania: {ex.Message}");
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, " Authentication.API - Błąd: {Message}", ex.Message);
     }
 }
 
+Console.WriteLine(" Authentication.API działa na http://localhost:5002");
 app.Run();
