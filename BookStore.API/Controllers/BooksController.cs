@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using BookStore.API.Data;
 using BookStore.API.Models;
 
 namespace BookStore.API.Controllers
@@ -9,114 +7,115 @@ namespace BookStore.API.Controllers
     [Route("api/[controller]")]
     public class BooksController : ControllerBase
     {
-        private readonly BookDbContext _context;
+        private readonly ILogger<BooksController> _logger;
 
-        public BooksController(BookDbContext context)
+        // Hardkodowane książki
+        private static readonly List<Book> _books = new List<Book>
         {
-            _context = context;
+            new Book 
+            {
+                Id = 1,
+                Title = "Wiedźmin: Ostatnie życzenie",
+                Author = "Andrzej Sapkowski",
+                Price = 39.99m,
+                Stock = 10,
+                Description = "Pierwszy tom kultowej sagi o wiedźminie Geralcie z Rivii",
+                ISBN = "9788375780635",
+                CreatedDate = DateTime.Now
+            },
+            new Book 
+            {
+                Id = 2,
+                Title = "Hobbit, czyli tam i z powrotem",
+                Author = "J.R.R. Tolkien",
+                Price = 49.99m,
+                Stock = 5,
+                Description = "Klasyczna powieść fantasy o przygodach Bilbo Bagginsa",
+                ISBN = "9788324159819",
+                CreatedDate = DateTime.Now
+            },
+            new Book 
+            {
+                Id = 3,
+                Title = "1984",
+                Author = "George Orwell",
+                Price = 29.99m,
+                Stock = 8,
+                Description = "Dystopijny świat totalitarnej kontroli",
+                ISBN = "9788382022287",
+                CreatedDate = DateTime.Now
+            }
+        };
+
+        public BooksController(ILogger<BooksController> logger)
+        {
+            _logger = logger;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Book>>> GetAll()
+        public ActionResult<IEnumerable<Book>> GetAll()
         {
-            try
-            {
-                var books = await _context.Books.ToListAsync();
-                return Ok(books);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Błąd: {ex.Message}");
-            }
+            _logger.LogInformation($"Zwracam {_books.Count} książek");
+            return Ok(_books);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Book>> GetById(int id)
+        public ActionResult<Book> GetById(int id)
         {
-            try
+            var book = _books.FirstOrDefault(b => b.Id == id);
+            if (book == null)
             {
-                var book = await _context.Books.FindAsync(id);
-                if (book == null)
-                {
-                    return NotFound();
-                }
-                return Ok(book);
+                _logger.LogWarning($"Książka o ID {id} nie została znaleziona");
+                return NotFound();
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Błąd: {ex.Message}");
-            }
+            
+            _logger.LogInformation($"Zwracam książkę: {book.Title}");
+            return Ok(book);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Book>> Create(Book book)
+        public ActionResult<Book> Create(Book book)
         {
-            try
-            {
-                _context.Books.Add(book);
-                await _context.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetById), new { id = book.Id }, book);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Błąd: {ex.Message}");
-            }
+            book.Id = _books.Count > 0 ? _books.Max(b => b.Id) + 1 : 1;
+            book.CreatedDate = DateTime.Now;
+            _books.Add(book);
+            
+            _logger.LogInformation($"Dodano nową książkę: {book.Title}");
+            return CreatedAtAction(nameof(GetById), new { id = book.Id }, book);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, Book book)
+        public IActionResult Update(int id, Book book)
         {
-            if (id != book.Id)
+            var existingBook = _books.FirstOrDefault(b => b.Id == id);
+            if (existingBook == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _context.Entry(book).State = EntityState.Modified;
+            existingBook.Title = book.Title;
+            existingBook.Author = book.Author;
+            existingBook.Price = book.Price;
+            existingBook.Stock = book.Stock;
+            existingBook.Description = book.Description;
+            existingBook.ISBN = book.ISBN;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!BookExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            _logger.LogInformation($"Zaktualizowano książkę: {existingBook.Title}");
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public IActionResult Delete(int id)
         {
-            try
+            var book = _books.FirstOrDefault(b => b.Id == id);
+            if (book == null)
             {
-                var book = await _context.Books.FindAsync(id);
-                if (book == null)
-                {
-                    return NotFound();
-                }
-
-                _context.Books.Remove(book);
-                await _context.SaveChangesAsync();
-
-                return NoContent();
+                return NotFound();
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Błąd: {ex.Message}");
-            }
-        }
 
-        private bool BookExists(int id)
-        {
-            return _context.Books.Any(e => e.Id == id);
+            _books.Remove(book);
+            _logger.LogInformation($"Usunięto książkę: {book.Title}");
+            return NoContent();
         }
     }
 }

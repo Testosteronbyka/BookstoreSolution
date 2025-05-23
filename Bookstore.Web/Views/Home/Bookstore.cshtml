@@ -6,8 +6,19 @@ ViewData["Title"] = "Księgarnia";
 <h1>Księgarnia</h1>
 <p>Przeglądaj nasze książki i dodawaj je do koszyka</p>
 
+<div class="alert alert-info">
+    <strong>Status API:</strong>
+    <a href="http://localhost:5001/test" target="_blank">Test BookStore.API</a> |
+    <a href="http://localhost:5001/api/books" target="_blank">API Books</a> |
+    <a href="http://localhost:5001/swagger" target="_blank">Swagger</a>
+</div>
+
 @if (Model != null && Model.Any())
 {
+<div class="alert alert-success">
+     Pobrano <strong>@Model.Count</strong> książek z API
+</div>
+
 <div class="row">
     @foreach (var book in Model)
     {
@@ -56,13 +67,13 @@ ViewData["Title"] = "Księgarnia";
 else
 {
 <div class="alert alert-warning">
-    <h4>Brak książek</h4>
-    <p>W tej chwili nie ma dostępnych książek w księgarni.</p>
-    <p><strong>Sprawdź:</strong></p>
-    <ul>
-        <li>Czy BookStore.API działa na https://localhost:7001</li>
-        <li>Czy w bazie danych jest tabela "books" z danymi</li>
-        <li>Czy connection string jest poprawny</li>
-    </ul>
+    <h4>Brak połączenia z API</h4>
+    <p><strong>Sprawdź czy BookStore.API działa:</strong></p>
+    <ol>
+        <li>Uruchom BookStore.API</li>
+        <li>Sprawdź <a href="http://localhost:5001/test" target="_blank">http://localhost:5001/test</a></li>
+        <li>Sprawdź <a href="http://localhost:5001/api/books" target="_blank">http://localhost:5001/api/books</a></li>
+        <li>Zobacz logi w konsoli</li>
+    </ol>
 </div>
 }
